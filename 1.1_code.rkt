@@ -135,3 +135,59 @@
         ((= kinds-of-coins 4) 25)
         ((= kinds-of-coins 5) 50)))
 (count-change 100)
+
+;; 树形递归练习题
+;;1.11
+(define (func n)
+  (if (< n 3)
+      n
+      (+ (* 1 (func (- n 1))) (* 2 (func (- n 2))) (* 3 (func (- n 3))))
+            ))
+(func 5)
+(func 10)
+(func 4)
+(define (easy-func a b c i n)
+  (if (= n i)
+      c
+      (easy-func (+ a (* 2 b) (* 3 c))
+                 a
+                 b
+                 (+ i 1)
+                 n)
+      ))
+(define (f n)
+  (easy-func 2 1 0 0 n))
+(f 4)
+(define (easy-funcs a b c n)
+  (if (= n 0)
+      c
+      (easy-funcs (+ a (* 2 b) (* 3 c))
+                  a
+                  b
+                  (- n 1))))
+(define (fs n)
+  (easy-funcs 2 1 0 n))
+(fs 5)
+(fs 10)
+;;1.12 题目翻译出错,应该是求三角形各个位置的元素
+(define (pascal row col)
+  (cond ((> col row)
+            (error "unvalid col value"))
+        ((or (= col 0) (= row col)) 1)
+        (else (+ (pascal (- row 1) (- col 1))
+                 (pascal (- row 1) col)))
+        )
+  )
+(pascal 4 3)
+;;阶乘公式
+(define (factorial n)
+  (fact-iter 1 1 n))
+(define (fact-iter a b n)
+  (if (> b n)
+      a
+      (fact-iter (* a b)
+                 (+ b 1)
+                 n)))
+(define (recursive-pascal row col)
+  (/ (factorial row) (* (factorial (- row col)) (factorial col))))
+(recursive-pascal 4 3)
