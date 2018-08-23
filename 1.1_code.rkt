@@ -135,6 +135,7 @@
         ((= kinds-of-coins 4) 25)
         ((= kinds-of-coins 5) 50)))
 (count-change 100)
+(count-change 11)
 
 ;; 树形递归练习题
 ;;1.11
@@ -144,7 +145,6 @@
       (+ (* 1 (func (- n 1))) (* 2 (func (- n 2))) (* 3 (func (- n 3))))
             ))
 (func 5)
-(func 10)
 (func 4)
 (define (easy-func a b c i n)
   (if (= n i)
@@ -168,7 +168,6 @@
 (define (fs n)
   (easy-funcs 2 1 0 n))
 (fs 5)
-(fs 10)
 ;;1.12 题目翻译出错,应该是求三角形各个位置的元素
 (define (pascal row col)
   (cond ((> col row)
