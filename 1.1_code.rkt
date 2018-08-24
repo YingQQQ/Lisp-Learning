@@ -190,3 +190,58 @@
 (define (recursive-pascal row col)
   (/ (factorial row) (* (factorial (- row col)) (factorial col))))
 (recursive-pascal 4 3)
+
+;;1.15练习题
+(define (cube x)
+  (* x x x))
+(cube 2)
+(define (p x)
+  (- (* 3 x) (* 4 (cube x))))
+(define (sina angle)
+  (if (not (> (abs angle) 0.1))
+      angle
+      (p (sina (/ angle 3.0)))))
+;;(sina 12.15) ;; 通过debug可以发现调用了5次
+;;(sina a)的时候 a每次都被除以3, 然后传入p, 而p里面是相减, 说明是一个递归过程,因此他的时候时间和空间复杂度是O(log a)
+;;如果以上预测是正确的话，那么每当 a 增大一倍(准确地说，是乘以因子 3)， p 的运行次数就会增加一次
+(sina 10) ;;调用5次
+(sina 30) ;;调用6次
+
+;;1.24 求幂
+(define (expt b n)
+  (if (= n 0)
+      1
+      (* b (expt b (- n 1)))))
+(expt 2 3)
+(define (new-expt b n)
+  (define (expt-iter count product)
+    (if (= count 0)
+        product
+        (expt-iter
+                   (- count 1)
+                   (* b product))))
+    (expt-iter n 1))
+(new-expt 2 4)
+
+;;1.16练习题
+(define (fast-expt b n a)
+  (cond ((= n 0) a)
+        ((even? n)
+         (fast-expt (square b) (/ n 2) a))
+        (else (fast-expt b
+                         (- n 1)
+                         (* b a)))))
+(define (even? n)
+  (= (remainder n 2) 0))
+(fast-expt 2 4 1)
+;;练习题1.17
+(define (double n)
+  (+ n n))
+(define (halve n)
+  (/ n 2))
+(define (multi a b)
+  (cond ((= b 0) 0)
+        ((even? b)
+         (double (multi a (halve b))))
+        (else (+ a (multi a (- b 1))))))
+(multi 2 4)
