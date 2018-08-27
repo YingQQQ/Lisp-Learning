@@ -245,3 +245,34 @@
          (double (multi a (halve b))))
         (else (+ a (multi a (- b 1))))))
 (multi 2 4)
+
+;;练习题1.18
+(define (new-multi a b)
+  (define (multi-iter a b product)
+    (cond ((= b 0) product)
+          ((even? b)
+           (multi-iter (double a) (halve b) product))
+          (else (multi-iter a
+                           (- b 1)
+                           (+ a product)))))
+  (multi-iter a b 0))
+(new-multi 2 5)
+
+;;练习题1.19
+(define (fast-fib n)
+  (define (fast-fib-iter a b p q n)
+    (cond ((= n 0) b)
+          ((even? n)
+           (fast-fib-iter a
+                          b
+                          (+ (square p) (square q))
+                          (+ (* 2 p q) (square q))
+                          (/ n 2)))
+          (else
+           (fast-fib-iter (+ (* b q) (* a p) (* a q))
+                          (+ (* b p) (* a q))
+                          p
+                          q
+                          (- n 1)))))
+    (fast-fib-iter 1 0 0 1 n))
+(fast-fib 5)
