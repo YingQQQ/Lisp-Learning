@@ -276,3 +276,11 @@
                           (- n 1)))))
     (fast-fib-iter 1 0 0 1 n))
 (fast-fib 5)
+;;欧几里得算法
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+(gcd 206 40)
+;;1.20练习题
+;;应用序调用5次,正则序调用30次 (5(5+1)/2)*2
