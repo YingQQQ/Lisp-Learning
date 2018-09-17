@@ -87,11 +87,65 @@ expmod 函数，通过每次对乘幂进行 remainder 操作，从而将乘幂�
         (else (remainder (* base (fast-expmod base (- exp 1) m))
                          m))))
 
+#|
+fast-expmod中当指数是偶数,求余的时候需要计算两次fast-expmod的值因此计算过程是Θ(n)次,
+而expmod中当指数是偶数,求余的时候需要计算一次expmod的值因此计算过程是Θ(logn)次,
+|#
 
 
+;; execrise 1.27 Carmichael数 注脚47提供的数字
 
+(prime? 561)
+(prime? 1105)
+(prime? 1729)
+(prime? 2465)
+(prime? 2821)
+(prime? 6601)
 
+;; execrise 1.28 Miller-Rabin 检查
 
+(define (miller-expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((nontrivial-square-root? base m)
+         0)
+        ((even? exp)
+         (remainder (square (miller-expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (miller-expmod base (- exp 1) m))
+                    m))))
 
+(define (nontrivial-square-root? base m)
+  (and (not (= base 1))
+       (not (= base (- m 1)))
+       (= 1 (remainder (square base) m))))
+
+(define (miller-fast-prime? n times)
+  (cond ((= times 0)
+         true)
+        ((miller-test n)
+         (miller-fast-prime? n (- times 1)))
+        (else false)))
+
+(define (miller-test n)
+  (define (miller-try-it a)
+    (= (miller-expmod a (- n 1) n) 1))
+  (miller-try-it (+ 1 (random (- n 1)))))
+       
+
+(define (miller-prime? n)
+    (display "prime is")
+    (newline)
+    (miller-fast-prime? n 10))
+
+(miller-prime? 4)
+(miller-prime? 6)
+(miller-prime? 7)
+(miller-prime? 561)
+(miller-prime? 1105)
+(miller-prime? 1729)
+(miller-prime? 2465)
+(miller-prime? 2821)
+(miller-prime? 6601)
 
 
