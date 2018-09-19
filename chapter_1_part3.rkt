@@ -138,7 +138,10 @@ fast-expmod中当指数是偶数,求余的时候需要计算两次fast-expmod的
     (newline)
     (miller-fast-prime? n 10))
 
+(miller-prime? 2)
+(miller-prime? 3)
 (miller-prime? 4)
+(miller-prime? 5)
 (miller-prime? 6)
 (miller-prime? 7)
 (miller-prime? 561)
