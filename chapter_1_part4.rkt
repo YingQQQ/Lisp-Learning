@@ -184,7 +184,7 @@
   (iter a null-value))
 
 
-;; 素数检查 费马小定律
+;; 素数检查 费马小定律 exercise 1.33
 (define (square x)
   (* x x))
 (define (expmod base exp m)
@@ -207,23 +207,142 @@
         ((prime-test n)
          (fast-prime? n (- times 1)))
         (else false)))
+
 (define (prime? n)
   (fast-prime? n 10))
 
+(define (smallest-divisor n)
+  (define (find-divisor test-divisor)
+    (cond ((> (square test-divisor) n)
+           n)
+          ((divides? test-divisor n)
+           test-divisor)
+          (else (find-divisor (+ test-divisor 1)))))
+  (define (divides? a b)
+    (= (remainder b a) 0))
+  (find-divisor 2))
+
+(define (slow-prime? n)
+  (= n (smallest-divisor n)))
+                              
+
+;; 迭代版本
+(define (fast-filtered-accumulate combiner null-value term a next b predicate)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (if (predicate a)
+             (iter (next a) (combiner result (term a)))
+             (iter (next a) result))))
+  (iter a null-value))
+
+;; 递归版本
+(define (filtered-accumulate combiner null-value term a next b predicate)
+    (if (> a b)
+        null-value
+        (if (predicate a)
+              (combiner (term a)
+                (filtered-accumulate combiner
+                            null-value
+                            term
+                            (next a)
+                            next
+                            b
+                            predicate))
+            (filtered-accumulate combiner
+                            null-value
+                            term
+                            (next a)
+                            next
+                            b
+                            predicate))))
+
+(define (fast-primes-sum a b)
+  (fast-filtered-accumulate +
+                       0
+                       (lambda (x) x)
+                       a
+                       (lambda (x) (+ x 1))
+                       b
+                       slow-prime?))
+
+(define (primes-sum a b)
+  (filtered-accumulate +
+                       0
+                       (lambda (x) x)
+                       a
+                       (lambda (x) (+ x 1))
+                       b
+                       slow-prime?))
+
+
+(fast-primes-sum 1 10)
+(primes-sum 1 10)
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+;互素函数
+(define (coprime? i n)
+  (and (< i n)
+       (= 1 (gcd i n))))
+
+(coprime? 2 7)
+(coprime? 2 3)
+(coprime? 2 4)
+
+(define (product-coprime i n)
+  (fast-filtered-accumulate *
+                       1
+                       (lambda (x) x)
+                       i ;; 从1开始到n
+                       (lambda (x) (+ x 1))
+                       n
+                       (lambda (x) (coprime? x n))))
+
+(product-coprime 1 10)
 
 
 
+;;1.32
+
+((lambda (x y z)
+   (+ x y (square z)))
+ 1 2 3)
 
 
+(define (fe x y)
+  ((lambda (a b)
+     (+ (* x (square a))
+        (* y b)
+        (* a b)))
+   (+ 1 (* x y))
+   (- 1 y)))
 
+(fe 1 2)
 
+(define (easy-f x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+         (+ (* x (square a))
+        (* y b)
+        (* a b))))
 
+(easy-f 1 2)
 
+;; execrise 1.34
 
-
-
-
-
-
-
-
+;将参数2应用于目标函数
+(define (f g)
+  (g 2))
+; square函数传入2
+(f square)
+;;lambda函数传入2
+(f (lambda (z) (* z (+ z 1))))
+#|
+(f f)含义是f函数传入2
+(f 2)
+(2 2)
+因此解释权无法识别2含义,因为第一个2不是过程
+|#
