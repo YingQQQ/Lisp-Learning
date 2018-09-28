@@ -53,23 +53,76 @@
  (lambda (y)(+ (sin y) (cos y)))
  1.0)
 
+;exercise 1.35 黄金分割点
 
+(fixed-point
+ (lambda (x) (+ 1 (/ 1 x)))
+ 1.0)
 
+; exercise 1.36
 
+(define (new-fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (infos text)
+    (display "infos:")
+    (display text)
+    (newline)
+    )
+  (define (try guess)
+    (infos guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+;steps ≈ 35
+(new-fixed-point
+ (lambda (x) (/ (log 1000) (log x)))
+ 2.0)
 
+(define (average-damp f)
+  (lambda (x)
+    (/ (+ x (f x)) 2
+       )))
+;steps ≈ 10
+(new-fixed-point
+ (average-damp (lambda (x) (/ (log 1000) (log x))))
+ 2.0)
 
+;exercise 1.37
+;a)
 
+;递归版本
+(define (cont-frac n d k)
+  (define (cf i)
+    (if (= i k)
+        (/ (n k) (d k))
+        (/ (n i)
+           (+ (d i) (cf (+ i 1))))
+        )
+    )
+  (cf 1))
+;; 十进制前四位0.6180
+(cont-frac (lambda (x) 1.0)
+           (lambda (x) 1.0)
+           11); ≈ 0.6180555555555556 前四位已经相同
 
-
-
-
-
-
-
-
-
-
-
+;迭代版本
+(define (fast-cont-frac n d k)
+  (define (cf i result)
+    (if (= i 0)
+        result
+        (cf (- i 1)
+            (/ (n i) (+ (d i) result) ))
+        )
+    )
+  (cf (- k 1) (/ (n k) (d k)))
+  )
+;; 十进制前四位0.6180
+(fast-cont-frac (lambda (x) 1.0)
+           (lambda (x) 1.0)
+           11); ≈ 0.6180555555555556 结果相同
 
 
 
