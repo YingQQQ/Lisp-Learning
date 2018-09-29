@@ -125,16 +125,131 @@
            11); ≈ 0.6180555555555556 结果相同
 
 
+;exercise 1.38
+
+(define (de k)
+  (define (n i)
+    1)
+  (define (even? i)
+    (= (remainder (+ i 1) 3) 0))
+  (define (d k)
+    (if (even? k)
+        (* 2 (/ (+ k 1) 3))
+        1))
+  (+ 2 (fast-cont-frac n d k)))
+
+(exact->inexact (de 100))
+
+;exercise 1.39
+;Lambert
+;递归版本
+(define (tan-cf x k)
+  (define (d i)
+    (- (* 2 i) 1))
+  (define (n i)
+    (if (= i 1)
+        x
+        (* x x)))
+  (define (cf i)
+    (if (= i k)
+        (/ (n k) (d k))
+        (/ (n i)
+           (- (d i)
+              (cf(+ i 1))))
+        )
+    )
+  (cf 1))
+(exact->inexact (tan-cf 10
+  1000))
+(tan 10);与内置的tan函数比较,校验正确值
+
+; chapter-1-1.34 page-48
+
+(define (sqrt x)
+  (define (average-damp f)
+    (lambda (x) (average x (f x))))
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+
+;newton-transform
+(define dx 0.00001)
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
 
 
+(define (cube x)
+  (* x x x))
+((deriv cube) 5)
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g) x)))))
+
+(define (newton-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (new-sqrt x)
+  (newton-method (lambda (y) (- (* y y) x))
+                 1.0))
+
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+(define (sqrt-first x)
+  (fixed-point-of-transform (lambda (y) (/ x y))
+                            average-damp
+                            1.0))
+(define (sqrt-second x)
+  (fixed-point-of-transform (lambda (y) (- (* y y) x))
+                            newton-transform
+                            1.0))
+
+;exercise-1.40
+
+(define (cubic a b c)
+  (lambda (x)
+    (+ (* x x x)
+       (* a x x)
+       (* b x)
+       c)))
+
+(newton-method (cubic 3 2 1) 1)
+
+;exercise-1.41
+
+(define (double f)
+    (lambda (x)
+        (f (f x))))
+
+(((double (double double)) inc) 5) ; = 21
+
+; exercise-1.42
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+(define (square x)
+  (* x x))
+
+((compose square inc) 6)
+
+;exercise-1.43
+
+(define (repeated n f)
+  (if (= n 1)
+      f
+      (lambda (x)
+        (let ((fs (repeated (- n 1) f)))
+          (f (fs x))))))
+
+(define (repeated-compose n f)
+  (if (= n 1)
+      f
+      (compose f (repeated-compose (- n 1) f))))
 
 
-
-
-
-
-
-
+((repeated 2 square) 5)
 
 
 
