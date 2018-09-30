@@ -243,13 +243,79 @@
         (let ((fs (repeated (- n 1) f)))
           (f (fs x))))))
 
+(define (fast-repeated n f)
+  (define (iter i rf)
+    (if (= i 1)
+        rf
+        (iter (- i 1)
+              (lambda (x)
+                (f (rf x))))))
+  (iter n f))
+
 (define (repeated-compose n f)
   (if (= n 1)
       f
       (compose f (repeated-compose (- n 1) f))))
 
+(define (fast-repeated-compose n f)
+  (define (iter i rf)
+    (if (= i 1)
+        rf
+        (iter (- i 1)
+              (compose f rf))))
+  (iter n f))
 
 ((repeated 2 square) 5)
+((fast-repeated 2 square) 5)
+
+;exercise-1.44
+(define (smooth f)
+  (lambda (x)
+    (/ (+ (f (- x dx))
+          (f x)
+          (f (+ x dx)))
+       3)))
+((smooth square) 5)
+
+(((fast-repeated 10 smooth) square) 5)
+
+(define (smooth-times n f)
+  (let ((smooth-time-f (fast-repeated n smooth)))
+    (smooth-time-f f)))
+
+((smooth-times 10 square) 5)
 
 
+;exercise-1.45
 
+(define (expt base n)
+  (if (= n 0)
+      1
+      ((fast-repeated n (lambda (x) (* base x))) 1)))
+
+(expt 2 0)
+(expt 2 5)
+
+(define (average-damp-n-times n f)
+  ((fast-repeated n average-damp) f))
+
+
+(define (damped-nth-root n damp-times)
+  (lambda (x)
+    (fixed-point (average-damp-n-times damp-times
+                                       (lambda (y)
+                                         (/ x
+                                            (expt y (- n 1)))))
+                 1.0)))
+
+(define sqrt-times (damped-nth-root 2 2))
+
+((damped-nth-root 1 1) 3)
+
+((damped-nth-root 2 2) (* 3 3))
+
+((damped-nth-root 3 3) (* 3 3 3))
+
+((damped-nth-root 4 2) (* 3 3 3 3))
+((damped-nth-root 5 2) (* 3 3 3 3 3))
+((damped-nth-root 5 3) (* 3 3 3 3 3))
