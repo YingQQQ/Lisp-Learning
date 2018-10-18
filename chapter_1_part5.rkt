@@ -319,3 +319,37 @@
 ((damped-nth-root 4 2) (* 3 3 3 3))
 ((damped-nth-root 5 2) (* 3 3 3 3 3))
 ((damped-nth-root 5 3) (* 3 3 3 3 3))
+
+;exercise-1.46
+
+(define (iterative-improve close-enough? improve)
+  (lambda(first-guess)
+    (define (try guess)
+      (let ((next (improve guess)))
+        (if (close-enough? guess next)
+            next
+            (try next))))
+    (try first-guess)))
+
+(define (latest-fixed-point f  first-guess)
+  (define tolerance 0.00001)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (improve guess)
+    (f guess))
+  ((iterative-improve close-enough? improve) first-guess))
+
+
+(latest-fixed-point cos 1.0)
+
+(define (sqrt-fixed-point x)
+  (define tolerance 0.00001)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (average x y)
+    (/ (+ x y) 2))
+  ((iterative-improve close-enough? improve) 1.0))
+
+(sqrt-fixed-point 9)
