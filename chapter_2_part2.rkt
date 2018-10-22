@@ -211,6 +211,7 @@
   (display ",")
   (display (upper-bound r))
   (display "]"))
+
 (define a (make-interval 1 10))
 (define b (make-interval 50 100))
 (define test1 (sub-interval b a))
@@ -235,8 +236,120 @@
 (width-interval mul-test) ;475.0
 (width-interval div-test) ;47.5
 
+;exercise-2.10
+;判断除数不为0就行,区间不包括0
+(define (check-zero r)
+  (and (<= (lower-bound r) 0)
+       (>= (upper-bound r) 0)))
+
+(define (better-div-interval x y)
+  (if (check-zero y)
+      (error "Error: The denominator should not span 0.")
+        (mul-interval x
+                (make-interval (/ 1.0 (upper-bound y))
+                               (/ 1.0 (lower-bound y))))))
+      
+(define c (make-interval -10 10))
+(display-info (div-interval c a))
+
+(display-info (better-div-interval c a))
+
+;exercise-2.11
+
+(define (better-mul-interval x y)
+  (let ((xl (lower-bound x))
+        (xh (upper-bound x))
+        (yl (lower-bound y))
+        (yh (upper-bound y)))
+    (cond ((and (>= xl 0)
+                (>= xh 0)
+                (>= yl 0)
+                (>= yh 0))
+           (make-interval (* xl yl) (* xh yh))) ;[+,+]*[+,+]
+          ((and (>= xl 0)
+                (>= xh 0)
+                (<= yl 0)
+                (>= yh 0))
+           (make-interval (* xh yl) (* xh yh))) ;[+,+]*[-,+]          
+          ((and (>= xl 0)
+                (>= xh 0)
+                (<= yl 0)
+                (<= yh 0))
+           (make-interval (* xh yl) (* xl yh))) ;[+,+]*[-,-]
+          ((and (<= xl 0)
+                (>= xh 0)
+                (>= yl 0)
+                (>= yh 0))
+           (make-interval (* xl yh) (* xh yh))) ;[-,+]*[+,+]
+          ((and (<= xl 0)
+                (>= xh 0)
+                (<= yl 0)
+                (>= yh 0))
+           (make-interval (min (* xl yh) (* xh yl))
+                         (max (* xl yl) (* xh yh)))) ;[-,+]*[-,+]
+          ((and (<= xl 0)
+                (>= xh 0)
+                (<= yl 0)
+                (<= yh 0))
+           (make-interval (* xh yl) (* xl yl))) ;[-,+]*[-,-]
+          ((and (<= xl 0)
+                (<= xh 0)
+                (>= yl 0)
+                (>= yh 0))
+           (make-interval (* xl yh) (* xh yl))) ;[-,-]*[+,+]
+          ((and (<= xl 0)
+                (<= xh 0)
+                (<= yl 0)
+                (>= yh 0))
+           (make-interval (* xl yh) (* xl yl))) ;[-,-]*[-,+]
+          (else
+           (make-interval (* xh yh) (* xl yl)))))) ;[-,-]*[-,-]
+
+(define d (make-interval -4 -2))
+(display-info (better-mul-interval a c))
+(display-info (better-mul-interval d d))
 
 
+;exercise-2.12
+
+(define (make-center-width c w)
+  (make-interval (- c w) (+ c w)))
+
+(define (center i)
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+
+(define (width i)
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+
+(define (make-center-percent c p)
+  (make-interval c (* c (/ p 100))))
+
+;center i 不能为0
+(define (percent i)
+  (/ (width i) (center i)))
+
+(define e (make-center-percent 5 20))
+(define interval-e (make-center-width 5.0 1.0))
+(display-info e)
+(display-info interval-e)
+(newline)
+(center interval-e)
+(width interval-e)
+(percent interval-e)
+
+;exercise-2.13
+
+
+
+
+
+
+
+
+
+
+
+  
 
 
 
