@@ -322,22 +322,90 @@
   (/ (- (upper-bound i) (lower-bound i)) 2))
 
 (define (make-center-percent c p)
-  (make-interval c (* c (/ p 100))))
+  (make-center-width c (* c (/ p 100.0))))
 
 ;center i 不能为0
 (define (percent i)
-  (/ (width i) (center i)))
+  (* 100 (/ (width i) (center i))))
 
 (define e (make-center-percent 5 20))
-(define interval-e (make-center-width 5.0 1.0))
 (display-info e)
-(display-info interval-e)
 (newline)
-(center interval-e)
-(width interval-e)
-(percent interval-e)
+(center e)
+(width  e)
+(percent e)
 
 ;exercise-2.13
+#|
+根据题意可以假设区间A和B,误差分别为P1和P2,中线点为C1和C2,而且所有的数值都是正的
+那么区间A=[C1-C1P1, C1+C1P1], B=[C2-C2P2, C2+C2P2]
+两个区间相乘 C = AB =[(C1-C1P1)(C2-C2P2), (C1+C1P1)(C2+C2P2)]
+                  =[C1C2(1-(P1+P2)+P1P2), C1C2(1+(P1+P2)+P1P2)]
+其中因为P1,P2很小则P1P2近似为0.
+                  =[C1C2(1-(P1+P2)), C1C2(1+(P1+P2))]
+|#
+
+(newline)
+(define q (make-center-percent 5 2))
+(define w (make-center-percent 10 3))
+(define z (mul-interval q w))
+(newline)
+(percent z)
+
+
+;exercise-2.14
+(define (part1 r1 r2)
+  (div-interval (mul-interval r1 r2)
+                (add-interval r1 r2)))
+
+(define (part2 r1 r2)
+  (let ((one (make-interval 1 1)))
+    (div-interval one
+                  (add-interval (div-interval one r1)
+                                (div-interval one r2)))))
+
+(define f (make-center-percent 100 5))
+(define g (make-center-percent 200 2))
+(define result1 (part1 f f))
+(define result2 (part2 f f))
+(display-info result1)
+(display-info result2)
+;result1 不等于 result2. lem正确
+(newline)
+(define result3 (center (part1 f g)))
+(define result4 (center (part2 f g)))
+(display result3)
+(newline)
+(display result4)
+;result3 不等于 result4. lem正确
+(define ff (div-interval f f)) ;A/A
+(display-info ff)
+(define fg (div-interval f g)) ;A/B
+(display-info fg)
+(newline)
+(center (part1 ff fg))
+(center (part2 ff fg))
+;上述结果不相等,lem正确
+
+;exercise-2.15
+#|
+在上面的习题2.14中，par1中R1与R2各出现了两次,因为R1与R2的值都是不确定的,多次引用的话肯定会使最终的结果误差较大.比如：R1的区间范围为[2,4],那么R1第一次取值可能为2.5,第二次取值可能为3.5.这在实际中是不可能的,虽然R1的值是不确定的,但是只要R1的值定下来了,后面引用多少次都是一样的而在part2中R1和R2只引用了一次这样结果误差会更小
+|#
+
+;exercise-2.16
+;n(m+l)= nm + nl
+(define n (make-interval 2 4))
+(define m (make-interval -2 0))
+(define l (make-interval 3 8))
+
+(define o (mul-interval n
+                        (add-interval m l)))
+(define p (add-interval (mul-interval n m)
+                        (mul-interval n l)))
+(display-info o)
+(display-info p)
+(display-info (div-interval (mul-interval n n) n)) ; n*n/n = n 算术代数上相等但是计算结果不相等;
+;问题2:因为区间是每次随机取值,每次不确定的因数越多结果误差越大,没有办法改变不确定因素的情况下是无法做到这样的设计程序的
 
 
 
@@ -349,7 +417,8 @@
 
 
 
-  
+
+
 
 
 
