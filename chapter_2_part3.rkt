@@ -222,8 +222,8 @@ int-one-through-four
           (list 57 321 88))
 ;2.2.2层次性结构
 (newline)
-(cons (list 1 2) (list 3 4))
-
+(display (cons (list 1 2) (list 3 4)))
+(newline)
 
 (define (count-leaves x)
   (cond ((null? x)
@@ -235,6 +235,32 @@ int-one-through-four
 
 (define x (cons (list 1 2) (list 3 4)))
 (count-leaves x)
-  
+
+;exercise-2.24
+
+(display (list 1 (list 2 (list 3 4))))
+
+;exercise-2.25
+
+(newline)
+(car (cdr (car (cdr (cdr (list 1 3 (list 5 7) 9))))))
+(car (car (list (list 7))))
+(display (list (list 1 2) 3 4))
+(newline)
+(car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr
+    (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))))))))))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
