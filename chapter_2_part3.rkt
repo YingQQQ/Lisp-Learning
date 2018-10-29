@@ -207,7 +207,7 @@ int-one-through-four
               (append answer
                       (list (square (car things)))))))
   (iter items nil))
-(square-list-good (list 1 2 3 4))
+(display (square-list-good (list 1 2 3 4 11)))
 
 ;exercise-2.23
 
@@ -251,6 +251,74 @@ int-one-through-four
     (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))))))))))))))
 
 
+;exercise-2.26
+(newline)
+(display (append (list 1 2 3) (list 4 5 6)))
+(newline)
+(display (car (cons (list 1 2 3) (list 4 5 6))))
+(newline)
+(display (list (list 1 2 3) (list 4 5 6)))
+
+;exercise-2.27
+
+(define x-1 (list (list 1 2) (list 3 4)))
+
+(define (deep-reverse tree)
+  (cond ((null? tree)
+         nil)
+        ((not (pair? tree))
+         tree)
+        (else
+         (reverse (list (deep-reverse (car tree))
+                        (deep-reverse (cadr tree)))))))
+(define (better-deep-reverse tree)
+  (define (iter items result)
+    (if (null? items)
+        result
+        (iter (cdr items)
+              (cons (if (pair? (car items))
+                        (better-deep-reverse (car items))
+                        (car items))
+                    result))))
+  (iter tree nil))
+                   
+(newline)
+(display (deep-reverse x-1))
+(newline)
+(display (better-deep-reverse x-1))
+
+;exercise-2.28
+
+(define (fringe tree)
+  (cond ((null? tree)
+         nil)
+        ((not (pair? tree))
+         (list tree))
+        (else (append (fringe (car tree))
+                (fringe (cadr tree))))))
+(newline)
+(display (fringe (list x-1 x-1)))
+
+
+;exercise-2.29
+
+(define (make-mobile left right)
+  (list left right))
+
+(define (make-branch length structure)
+  (list length structure))
+
+(define (left-branch mobile)
+  (car mobile))
+
+(define (right-branch mobile)
+  (cadr mobile))
+
+(define (branch-length branch)
+  (car branch))
+
+(define (branch-structure structure)
+  (cadr structure))
 
 
 
