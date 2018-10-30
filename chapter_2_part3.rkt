@@ -320,11 +320,132 @@ int-one-through-four
 (define (branch-structure structure)
   (cadr structure))
 
+(define mobile (make-mobile (make-branch 10 25)
+                            (make-branch 5 20)))
+(define another-mobile (make-mobile (make-branch 10 mobile)
+                            (make-branch 5 mobile)))
+
+(branch-length (left-branch mobile))
+(branch-structure (left-branch mobile))
+
+(define (total-weight mobile)
+  (+ (branch-weight (left-branch mobile))
+     (branch-weight (right-branch mobile))))
+
+(define (branch-weight branch)
+  (cond ((null? branch)
+         0)
+        ((pair? (branch-structure branch))
+         (total-weight (branch-structure branch)))
+        (else (branch-structure branch))))
+(total-weight another-mobile)
+
+(define (branch-factor branch)
+  (* (branch-length branch)
+     (branch-weight branch)))
+
+(define (branch-balance mobile)
+  (let ((left (left-branch mobile))
+        (right (right-branch mobile)))
+    (and (same-torque? left right)
+         (branch-torque? left)
+         (branch-torque? right))))
+
+(define (branch-torque? branch)
+    (if (pair? (branch-structure branch))
+        (branch-balance (branch-structure branch))
+        true))
+
+(define (same-torque? left right)
+  (= (branch-factor left)
+     (branch-factor right)))
+(define b (make-mobile (make-branch 2 3) (make-branch 4 5)))
+(define a (make-mobile (make-branch 2 3) (make-branch 2 3)))
+(branch-balance b)
+(branch-balance a)
 
 
+(define (make-another-mobile left right)
+  (cons left right))
+
+(define (make-another-branch length structure)
+  (cons length structure))
+
+(define (right-another-branch mobile)
+  (cdr mobile))
+
+(define (branch-another-structure structure)
+  (cdr structure))
+
+;对树的映射
+
+(define (new-scale-tree tree factor)
+  (cond ((null? tree)
+         nil)
+        ((not (pair? tree))
+         (* tree factor))
+        (else (cons (new-scale-tree (car tree) factor)
+                    (new-scale-tree (cdr tree) factor)))))
 
 
+(define (another-scale-tree tree factor)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (another-scale-tree sub-tree factor)
+             (* sub-tree factor)))
+       tree))
 
+
+;exercise-2.30
+
+
+(define (square-tree items)
+  (cond ((null? items)
+         nil)
+        ((not (pair? items))
+         (square items))
+        (else (cons (square-tree (car items))
+                    (square-tree (cdr items))))))
+
+(define w (list 1 (list 2 (list 3 4) 5) (list 6 7)))
+(display (square-tree w))
+
+(define (square-tree-map items)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (square-tree-map sub-tree)
+             (square sub-tree)))
+       items))
+(newline)
+(display (square-tree-map w))
+
+;exercise-2.31
+
+(define (tree-map factor items)
+  (cond ((null? items)
+         nil)
+        ((not (pair? items))
+         (factor items))
+        (else (cons (square-tree (car items))
+                    (square-tree (cdr items))))))
+
+(define (another-square-tree tree)
+  (tree-map square tree))
+
+(newline)
+(display (another-square-tree w))
+
+;exercise-2.32
+
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map (lambda (x)
+                                (cons (car s) x))
+                          rest)))))
+(newline)
+(display (subsets (list 1 2 3)))
 
 
 
