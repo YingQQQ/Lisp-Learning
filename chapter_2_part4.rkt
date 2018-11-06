@@ -248,15 +248,113 @@
                 (enumerate-interval 1 n)))))
 
 
-(display-info (accumulate append
-nil
-(map (lambda (i)
-(map (lambda (j) (list i j))
-(enumerate-interval 1 (- i 1))))
-(list 1 2 3)))) 
+(define (permutations s)
+  (if (null? s)
+      (list s)
+      (flatmap (lambda (x)
+                 (map (lambda (p)
+                        (cons x p))
+                      (permutations (remove x s))))
+                 s)))
 
-(display-info (enumerate-interval 1 3))
-(display-info (enumerate-interval 1 2))
+(define (remove item seqs)
+  (filter (lambda (x)
+            (not (= x item)))
+          seqs))
+
+;exercise-2.40
+
+(define (prime-sum-pairs-1 n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (unique-pairs n))))
+
+(define (unique-pairs n)
+    (flatmap (lambda (i)
+                 (map (lambda (j) (list i j))
+                      (enumerate-interval 1 (- i 1))))
+             (enumerate-interval 1 n)))
+
+
+(display-info (prime-sum-pairs-1 6))
+
+
+;exercise-2.41
+
+(define (unique-triples n)
+  (flatmap (lambda (i)
+             (map (lambda (j)
+                    (cons i j))
+                  (unique-pairs (- i 1))))
+           (enumerate-interval 1 n))) ;三元数组
+
+;(display-info (unique-triples 5))
+
+(define (sum-triples lst)
+  (if (null? lst)
+      0
+      (+ (car lst)
+         (sum-triples (cdr lst)))))
+
+(define (sum-triples-equal-n sum triples)
+  (= sum (sum-triples triples))) ;过滤条件
+
+(define (equal-sum-triples n)
+       (filter (lambda (x)
+                 (sum-triples-equal-n n x))
+               (unique-triples n)))
+
+(display-info  (equal-sum-triples 13));整数13的和三元数组的和也等于13
+
+;exercise-2.42
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions)
+           (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position new-row rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+
+(define empty-board nil)
+
+(define (adjoin-position new-row rest-of-queens)
+  (cons new-row rest-of-queens))
+
+(define (safe? k positions)
+  (define (iter-check row-of-new-queens rest-of-queens i)
+    (if (null? rest-of-queens) ;下方所有皇后检查完毕，新皇后安全
+        #t
+        (let ((row-of-current-queens (car rest-of-queens)))
+          (if (or (= row-of-new-queens row-of-current-queens) ;行比较不能在一行
+                  (= row-of-new-queens (+ i row-of-current-queens)) ;不能在对角线
+                  (= row-of-new-queens (- row-of-current-queens i))) ;同上
+              #f
+              (iter-check row-of-new-queens
+                          (cdr rest-of-queens); 继续检查剩余的皇后
+                          (+ i 1)))))) ;继续比较下一行
+    (iter-check (car positions)
+              (cdr positions)
+              1))
+
+;exercise-2.43
+
+;练习2.42中的queens函数对于每个棋盘(queen-cols k),使用 enumerate-interval 产生 board-size 个棋盘。
+;而 Louis 的 queens 函数对于 (enumerate-interval 1 board-size) 的每个 k ，都要产生 (queen-cols (- k 1)) 个棋盘。
+;因此， Louis 的 queens 函数的运行速度大约是原来 queens 函数的 board-size 倍，也即是 T * board-size
+
+
+
+
+
 
 
 
