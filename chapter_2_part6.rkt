@@ -100,6 +100,7 @@
         ((and (number? a1) (number? a2))
          (+ a1 a2))
         (else (list '+ a1 a2))))
+
 (define (=number? exp num)
   (and (number? exp) (= exp num)))
 
@@ -134,7 +135,7 @@
           (make-product (exponent exp)
                         (make-exponentiation (base exp)
                                              (- (exponent exp) 1)))
-          (deriv (base exp) var)))
+          (deriv-exercise (base exp) var)))
         (else
          (error "unknown expression tyep -- DERIV" exp))))
 
@@ -151,6 +152,76 @@
   (cond ((=number? exponent 0) 1)
         ((=number? exponent 1) base)
         (else (list '** base exponent))))
+
+;exercise-2.57
+
+(define (augend-exercise a)
+  (if (null? (cdddr a))
+      (caddr a)
+      (cons '+ (cddr a))))
+
+(define (multiplicand-exercise p)
+  (if (null? (cdddr p))
+      (caddr p)
+      (cons '* (cddr p))))
+
+;exercise-2.58
+
+;a)
+(define (make-sum-new a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2))
+         (+ a1 a2))
+        (else (list a1 '+ a2))))
+
+(define (sum-new? x)
+  (and (pair? x) (eq? (cadr x) '+)))
+
+(define (addend-new a)
+  (car a))
+
+(define (make-product-new m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0))
+         0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2))
+         (* m1 m2))
+        (else (list m1 '* m2))))
+
+
+(define (product-new? x)
+  (and (pair? x) (eq? (cadr x) '*)))
+
+
+(define (multiplier-new a)
+  (car a))
+
+;b)
+;如果允许使用标准代数写法的话，那么我们就没办法只是通过修改谓词、选择函数和构造函数来达到正确计算如果允许使用标准代数写法的话,那么我们就没办法只是通过修改谓词、选择函数和构造函数来达到正确计算求导的目的,因为这必须要修改 deriv 函数,提供符号的优先级处理功能。
+;比如说,对于输入 x + y * z ,有两种可能的求导顺序会产生(称之为二义性文法),一种是 (x + y) * z ,另一种是 x + (y * z) ;对于求导计算来说,后一种顺序才是正确的,但是这种顺序必须通过修改 deriv 来提供,只是修改谓词、选择函数和构造函数是没办法达到调整求导顺序的目的的。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
