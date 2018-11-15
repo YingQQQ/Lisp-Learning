@@ -49,7 +49,7 @@
                  ((> x1 x2)
                   (cons x2 (union-set set1 (cdr set2)))))))))
             
-(union-set (list 1 2) (list 1 3 5 7 9))
+(union-set '(1 2 3 4 5) (list 1 3 5 7 9))
 
 
 

@@ -60,9 +60,12 @@
 
 (define a (make-tree 1 nil nil))
 (define b (make-tree 5 nil nil))
+(define e (make-tree 11 nil nil))
+(define f (make-tree 9 nil e))
 (define c (make-tree 3 a b))
-(tree->list-1 c)
-(tree->list-2 c)
+(define trees (make-tree 7 c f))
+(tree->list-1 trees)
+(tree->list-2 trees)
 ;a)
 ;两个树产生的结果是一样的
 ;b)
@@ -71,7 +74,7 @@
 
 ;exercise-2.64
 
-(define (list-tree elements)
+(define (list->tree elements)
   (car (partial-tree elements (length elements))))
 
 (define (partial-tree elts n)
@@ -90,7 +93,6 @@
                 (cons (make-tree this-entry left-tree right-tree)
                       remianing-elts))))))))
                 
-(quotient (- (length '(1 3 5 7 9 11)) 1) 2)
 
 #|
 (1 3)(5 7 9 11)             ; 分割左右子树
@@ -155,3 +157,31 @@
 
 ;b)
 ;对于列表中的每个节点， list->tree 都要执行一次 make-tree （复杂度为 Θ(1) ），将这个节点和它的左右子树组合起来，因此对于长度为 n 的列表来说， list->tree 的复杂度为 对于列表中的每个节点, list->tree 都要执行一次 make-tree (复杂度为 Θ(1) ),将这个节点和它的左右子树组合起来,因此对于长度为 n 的列表来说, list->tree 的复杂度为 Θ(n) 。
+
+;exercise-2.65
+
+(define (union-set-ol set1 set2)
+  (cond ((null? set1) set2)
+	((null? set2) set1)
+	(else
+	 (let ((x1 (car set1))
+               (x2 (car set2)))
+           (cond ((= x1 x2)
+                  (cons x1 (union-set-ol (cdr set1) (cdr set2))))
+                 ((< x1 x2)
+                  (cons x1 (union-set-ol (cdr set1) set2)))
+                 ((> x1 x2)
+                  (cons x2 (union-set-ol set1 (cdr set2)))))))))
+
+(define (union-set set1 set2)
+  (list->tree
+   (union-set-ol
+    (tree->list-2 set1)
+    (tree->list-2 set2))))
+
+(define one (list->tree '(1 2 3 4 5)))
+(define two (list->tree '(1 3 5 7 9)))
+(union-set one two)
+(tree->list-2 (union-set one two))
+
+
