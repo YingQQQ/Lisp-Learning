@@ -184,4 +184,108 @@
 (union-set one two)
 (tree->list-2 (union-set one two))
 
+(define (intersection-set-ol set1 set2)
+  (if (or (null? set1) (null? set2))
+      nil
+      (let ((x1 (car set1))
+            (x2 (car set2)))
+        (cond ((= x1 x2)
+               (cons x1 (intersection-set-ol (cdr set1)
+                                             (cdr set2))))
+              ((< x1 x2)
+               (intersection-set-ol (cdr set1) set2))
+              ((> x1 x2)
+               (intersection-set-ol set1 (cdr set2)))))))
 
+(define (intersection-set set1 set2)
+  (list->tree
+   (intersection-set-ol
+    (tree->list-2 set1)
+    (tree->list-2 set2))))
+
+(intersection-set one two)
+(tree->list-2 (intersection-set one two))
+
+;;集合和信息检索
+
+(define (equal? s1 s2)
+  (if (and (pair? s1) (pair? s2))
+      (and (equal? (car s1) (car s2))
+      (equal? (cdr s1) (cdr s2)))
+      (eq? s1 s2)))
+
+(define (key records)
+  (car records))
+
+(define (lookup given-key set-of-records)
+  (cond ((null? set-of-records)
+         false)
+        ((equal? given-key (key (car set-of-records)))
+         (car set-of-records))
+        (else (lookup given-key (cdr set-of-records)))))
+
+(define (lookup-better given-key records)
+  (if (null? records)
+      false
+      (let ((entry (key (car records))))
+        (cond ((= given-key key)
+               (car records))
+              ((< given-key key)
+               (lookup-better given-key
+                              (left-branch records)))
+               ((> given-key key)
+               (lookup-better given-key
+                              (right-branch records)))))))
+#|
+                  (7 "John")
+                  /        \
+                 /          \
+          (3 "Mary")       (19 "Tom")
+          /     \
+(1 "Peter")    (5 "Jack")
+|#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
