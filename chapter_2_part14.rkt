@@ -1,4 +1,5 @@
 #lang sicp
+
 ;;消息传递
 ;exericse-2.75
 
@@ -57,27 +58,35 @@
 
 
 (define  (attach-tag type-tag contents)
-  (cons type-tag contents))
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
 
 (define (type-tag datum)
-  (if (pair? datum)
-      (car datum)
-      (error "Bad tagged datum TYPE-TAG --" datum)))
+ (cond ((number? datum)
+        'scheme-number)
+       ((pair? datum)
+        (car datum))
+       (else
+            (error "Bad tagged datum -- TYPE-TAG" datum))))
 
 (define (contents datum)
-  (if (pair? datum)
-      (cdr datum)
-      (error "Bad tagged datum CONTENTS --" datum)))
+    (cond ((number? datum)
+            datum)
+          ((pair? datum)
+            (cdr datum))
+          (else
+            (error "Bad tagged datum -- CONTENT" datum))))
 
 (define (apply-generic op . args)
   (let ((type-tags (map type-tag args)))
+    (write type-tags)
     (let ((proc (get op type-tags)))
       (if proc
           (apply proc (map contents args))
           (error
            "No mathod for these types --- APPLY-GENERIC"
            (list op type-tags))))))
-
 ;通用型算术运算
 (define (add x y)
   (apply-generic 'add x y))
@@ -216,13 +225,13 @@
 
 
 ;;exercise-2.77
+;;https://sicp.readthedocs.io/en/latest/chp2/77.html
 
+;;exercise-2.78
+;;https://sicp.readthedocs.io/en/latest/chp2/78.html
 
-
-
-
-
-
+;;exercise-2.80
+;;https://sicp.readthedocs.io/en/latest/chp2/80.html
 
 
 
